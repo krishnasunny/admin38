@@ -1,0 +1,61 @@
+import { RoleConfig } from "../types/role";
+
+export const roleConfigs: Record<string, RoleConfig> = {
+  super_admin: {
+    name: "super_admin",
+    description: "Full system access",
+    permissions: [
+      "dashboard.view",
+      // 'vendors-dash.view',
+      "products.view",
+      "products.create",
+      "products.edit",
+      "products.delete",
+      "orders.view",
+      "orders.update",
+      "orders.cancel",
+      "vendors.view",
+      "vendors.create",
+      "vendors.edit",
+      "vendors.delete",
+      "users.view",
+      "users.create",
+      "users.edit",
+      "users.delete",
+      "reports.view",
+      "reports.export",
+      "settings.view",
+      "settings.edit",
+    ],
+  },
+  vendor_admin: {
+    name: "vendor_admin",
+    description: "Manage vendor-specific products and orders",
+    permissions: [
+      "vendors-dash.view",
+      "products.view",
+      "products.create",
+      "products.edit",
+      "products.delete",
+      "orders.view",
+      "orders.update",
+      "reports.view",
+      "settings.view",
+    ],
+  },
+  staff: {
+    name: "staff",
+    description: "Handle day-to-day operations",
+    permissions: [
+      "products.view",
+      "orders.view",
+      "orders.update",
+      "reports.view",
+    ],
+  },
+  customer: {
+    name: "customer",
+    description: "Basic customer access",
+    permissions: ["products.view", "orders.view"],
+  },
+};
