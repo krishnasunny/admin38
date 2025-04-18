@@ -1,9 +1,11 @@
-import { ProductCategory, ProductStatus } from './product';
+import {
+  //  ProductCategory, 
+  ProductStatus } from './product';
 
 export interface ProductFiltersProps {
   filters: {
     search: string;
-    category: ProductCategory | 'all';
+    category_name: string | 'all' ;
     status: ProductStatus | 'all';
     minPrice?: number;
     maxPrice?: number;

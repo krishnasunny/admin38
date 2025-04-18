@@ -5,30 +5,32 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
+} from "@/components/ui/table";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Button } from '@/components/ui/button';
-import { MoreHorizontal, Plus } from 'lucide-react';
-import { Category } from '@/lib/types/category';
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { EyeIcon, MoreHorizontal } from "lucide-react";
+import { Category } from "@/lib/types/category";
+import { useNavigate } from "react-router-dom";
+
 
 interface CategoryTableProps {
   categories: Category[];
   onEdit: (category: Category) => void;
   onDelete: (category: Category) => void;
-  onAddSubcategory: (category: Category) => void;
+  // onAddSubcategory: (category: Category) => void;
 }
 
 export function CategoryTable({
   categories,
   onEdit,
   onDelete,
-  onAddSubcategory,
 }: CategoryTableProps) {
+  const navigate = useNavigate();
   return (
     <div className="rounded-md border">
       <Table>
@@ -37,7 +39,7 @@ export function CategoryTable({
             <TableHead>Image</TableHead>
             <TableHead>Name</TableHead>
             <TableHead>Description</TableHead>
-            <TableHead>Subcategories</TableHead>
+            <TableHead></TableHead>
             <TableHead className="w-[100px]">Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -54,18 +56,15 @@ export function CategoryTable({
                 )}
               </TableCell>
               <TableCell className="font-medium">{category.name}</TableCell>
-              <TableCell>{category.description}</TableCell>
+              <TableCell>{category.description} </TableCell>
               <TableCell>
-                <div className="flex flex-wrap gap-1">
-                  {category.subcategories.map((sub) => (
-                    <span
-                      key={sub.id}
-                      className="inline-flex items-center rounded-full bg-primary/10 px-2 py-1 text-xs"
-                    >
-                      {sub.name}
-                    </span>
-                  ))}
-                </div>
+                <Button
+                  variant="ghost"
+                  onClick={() => navigate(`/subcategories/${category.id}`)}
+                  className="h-8 w-8 p-0"
+                >
+                <EyeIcon/>
+                </Button>
               </TableCell>
               <TableCell>
                 <DropdownMenu>
@@ -78,9 +77,10 @@ export function CategoryTable({
                     <DropdownMenuItem onClick={() => onEdit(category)}>
                       Edit
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => onAddSubcategory(category)}>
-                      <Plus className="mr-2 h-4 w-4" />
-                      Add Subcategory
+                    <DropdownMenuItem
+                      onClick={() => navigate(`/subcategories/${category.id}`)}
+                    >
+                      Subcategory
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       className="text-red-600"
@@ -98,22 +98,6 @@ export function CategoryTable({
     </div>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // import { useEffect, useState } from 'react';
 // import {
@@ -233,13 +217,6 @@ export function CategoryTable({
 //     </div>
 //   );
 // }
-
-
-
-
-
-
-
 
 // import {
 //   Table,

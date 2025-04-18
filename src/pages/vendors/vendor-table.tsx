@@ -143,7 +143,9 @@ export function VendorTable() {
           </TableHeader>
           <TableBody>
             {paginatedVendors.map((vendor) => (
-              <TableRow key={vendor.id} onClick={()=>navigate(`/vendors/${vendor.id}`)}>
+              <TableRow key={vendor.id}
+              //  onClick={()=>navigate(`/vendors/${vendor.id}`)}
+               >
                 <TableCell className="font-medium">
                   {vendor.name}
                 </TableCell>

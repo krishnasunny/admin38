@@ -9,11 +9,11 @@ export interface Category {
 }
 
 export interface Subcategory {
-  id: string;
+  subcategory_id: string;
   name: string;
   description?: string;
-  imageUrl?: string;
-  categoryId: string;
+  image_url?: string;
+  category_id: number;
   createdAt: string;
   updatedAt: string;
 }

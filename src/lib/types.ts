@@ -97,8 +97,9 @@ export interface User {
   id: string;
   email: string;
   name: string;
-  role: string; 
-  // role: 'super_admin' | 'admin' | 'vendor' | 'customer'; // Extend roles if needed
+  // role: string; 
+  role: "super_admin" | "vendor_admin" | "staff"; // Extend roles if needed
+  vendor_id:number;
 }
 
 

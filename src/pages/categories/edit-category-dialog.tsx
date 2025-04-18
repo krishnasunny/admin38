@@ -9,6 +9,8 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Category } from '@/lib/types/category';
+import { useState } from 'react';
+import { Loader2 } from 'lucide-react';
 
 interface EditCategoryDialogProps {
   open: boolean;
@@ -25,17 +27,40 @@ export function EditCategoryDialog({
 }: EditCategoryDialogProps) {
   if (!category) return null;
 
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    try {
+      const formData = new FormData(e.currentTarget);
+      await onSubmit(formData);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Edit Category</DialogTitle>
         </DialogHeader>
-        <form onSubmit={(e) => {
-          e.preventDefault();
-          const formData = new FormData(e.currentTarget);
-          onSubmit(formData);
-        }}>
+        <form 
+        // onSubmit={(e) => {
+        //   e.preventDefault();
+        //   const formData = new FormData(e.currentTarget);
+        //   onSubmit(formData);
+        // }}
+        onSubmit={handleSubmit}
+        >
           <div className="space-y-4">
             <div>
               <Label htmlFor="name">Name</Label>
@@ -70,6 +95,9 @@ export function EditCategoryDialog({
                 accept="image/*"
               />
             </div>
+            {error && (
+              <p className="text-sm text-red-500 mt-1">{error}</p>
+            )}
             <div className="flex justify-end space-x-2">
               <Button
                 type="button"
@@ -78,7 +106,14 @@ export function EditCategoryDialog({
               >
                 Cancel
               </Button>
-              <Button type="submit">Update Category</Button>
+              <Button type="submit" disabled={loading}> {loading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Updating...
+                </>
+              ) : (
+                'Update Category'
+              )}</Button>
             </div>
           </div>
         </form>

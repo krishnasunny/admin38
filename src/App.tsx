@@ -15,6 +15,8 @@ import SettingsPage from "./pages/settings/page";
 import { VendorDashboardPage } from "./pages/vendor-dashboard";
 import { useAuthStore } from "./lib/store";
 import CategoriesPage from "./pages/categories/page";
+import SubCategoriesPage from "./pages/subcategories/page";
+
 
 export default function App() {
   const { user } = useAuthStore();
@@ -114,6 +116,10 @@ export default function App() {
               }
             />
             <Route path="/categories" element={<CategoriesPage />} />
+            {/* <Route path="/subcategories" element={<SubCategoriesPage />} /> */}
+            <Route path="/subcategories/:categoryId" element={<SubCategoriesPage />} />
+
+            
           </Route>
         </Routes>
       </Router>

@@ -1,3 +1,83 @@
+// import { jwtDecode } from 'jwt-decode';
+// import { url } from './utils';
+// import { User } from '@/lib/types'; // Ensure User contains id, name, email, role
+
+// // Define the expected role type explicitly
+// type UserRole = "super_admin" | "vendor_admin" | "staff";
+
+// interface DecodedToken extends Omit<User, "role"> {
+//   role: string; // Initially, role is a string
+//   exp?: number;
+// }
+
+// export async function loginUser(email: string, password: string) {
+//   try {
+//     const response = await fetch(url.api + '/api/auth/login', {
+//       method: 'POST',
+//       headers: {
+//         'Content-Type': 'application/json',
+//       },
+//       body: JSON.stringify({ email, password }),
+//     });
+
+//     if (!response.ok) {
+//       throw new Error('Invalid credentials');
+//     }
+
+//     const data = await response.json();
+
+//     if (!data.token) {
+//       throw new Error('No token received');
+//     }
+
+//     localStorage.setItem('token', data.token);
+//     const decoded: DecodedToken = jwtDecode(data.token);
+
+//     // Ensure the decoded token has required fields
+//     if (!decoded.id || !decoded.email || !decoded.name || !decoded.role) {
+//       throw new Error('Invalid user data from token');
+//     }
+
+//     // Cast `role` to the expected type
+//     const user: User = {
+//       ...decoded,
+//       role: decoded.role as UserRole, // Explicitly cast role to match User type
+//     };
+
+//     return {
+//       user,
+//       token: data.token,
+//     };
+//   } catch (error: any) {
+//     throw new Error(`Login failed: ${error.message}`);
+//   }
+// }
+
+// export function isAuthenticated() {
+//   const token = localStorage.getItem('token');
+//   if (!token) return false;
+
+//   try {
+//     const decoded: DecodedToken = jwtDecode(token);
+
+//     if (decoded.exp && decoded.exp * 1000 < Date.now()) {
+//       logout();
+//       return false;
+//     }
+
+//     return true;
+//   } catch {
+//     return false;
+//   }
+// }
+
+// export function logout() {
+//   localStorage.removeItem('token');
+// }
+
+
+
+
 import {jwtDecode} from 'jwt-decode';
 import { url } from './utils';
 

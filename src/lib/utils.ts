@@ -12,4 +12,7 @@ export function formatCurrency(amount: number): string {
   }).format(amount);
 }
 
-export const url = { api: "http://localhost:3000" };
+// export const url = { api: "https://easykirana.in" };
+export const url = { api: "http://103.181.200.66:3000" };
+
+

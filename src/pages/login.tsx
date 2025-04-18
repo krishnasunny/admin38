@@ -19,6 +19,8 @@ import { useToast } from '@/hooks/use-toast';
 import { loginUser } from '@/lib/auth';
 import { useAuthStore } from '@/lib/store';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { User } from '@/lib/types';
+
 
 const formSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -43,7 +45,7 @@ export function LoginPage() {
     try {
       setIsLoading(true);
       const { user } = await loginUser(values.email, values.password);
-      login(user);
+      login(user as User);
       toast({
         title: 'Success',
         description: 'You have been logged in successfully.',
@@ -137,7 +139,7 @@ export function LoginPage() {
                 )}
               </Button>
 
-              <div className="relative my-6">
+              {/* <div className="relative my-6">
                 <div className="absolute inset-0 flex items-center">
                   <div className="w-full border-t"></div>
                 </div>
@@ -154,7 +156,7 @@ export function LoginPage() {
                   <br />
                   Password: admin123
                 </p>
-              </div>
+              </div> */}
             </form>
           </Form>
         </CardContent>

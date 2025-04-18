@@ -5,10 +5,10 @@ import { CategoryTable } from './category-table';
 import { AddCategoryDialog } from './add-category-dialog';
 import { EditCategoryDialog } from './edit-category-dialog';
 import { DeleteCategoryDialog } from './delete-category-dialog';
-import { AddSubcategoryDialog } from './add-subcategory-dialog';
 import { Category } from '@/lib/types/category';
 import { useToast } from '@/hooks/use-toast';
 import axios from 'axios';
+import { url } from '@/lib/utils';
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -17,7 +17,6 @@ export default function CategoriesPage() {
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-  const [isAddSubcategoryOpen, setIsAddSubcategoryOpen] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -27,7 +26,7 @@ export default function CategoriesPage() {
   const fetchCategories = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch('http://localhost:3000/api/categories');
+      const response = await fetch(`${url.api}/api/categories`);
       if (!response.ok) {
         throw new Error('Failed to fetch categories');
       }
@@ -73,7 +72,7 @@ export default function CategoriesPage() {
       formData.append("file", newFile);
 
       axios
-        .post("http://localhost:3000/api/upload-gcs", formData, {
+        .post(`${url.api}/api/upload-gcs`, formData, {
           headers: { "Content-Type": "multipart/form-data" },
         })
         .then((res) => {
@@ -112,7 +111,7 @@ export default function CategoriesPage() {
     try {
       const imageUrl = await uploadImage(imageFile, "asf");
 
-      const response = await fetch("http://localhost:3000/api/categories", {
+      const response = await fetch(`${url.api}/api/categories`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -149,32 +148,48 @@ export default function CategoriesPage() {
   const handleEditCategory = async (formData: FormData) => {
     if (!selectedCategory) return;
 
-    try {
-      // In a real app, you would make an API call here
-      const updatedCategory: Category = {
-        ...selectedCategory,
-        name: formData.get('name') as string,
-        description: formData.get('description') as string,
-        imageUrl: formData.get('image') 
-          ? URL.createObjectURL(formData.get('image') as File)
-          : selectedCategory.imageUrl,
-        updatedAt: new Date().toISOString(),
-      };
+    const token = localStorage.getItem("token");
+    const name = formData.get("name") as string;
+    const description = formData.get("description") as string;
+    const imageFile = formData.get("image") as File;
 
-      setCategories(categories.map(cat => 
-        cat.id === selectedCategory.id ? updatedCategory : cat
-      ));
+    try {
+      let imageUrl = selectedCategory.imageUrl;
+      
+      if (imageFile.size > 0) {
+        imageUrl = await uploadImage(imageFile, "asf");
+      }
+
+      const response = await fetch(`${url.api}/api/categories/${selectedCategory.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          category_name: name,
+          description,
+          image_url: imageUrl,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update category");
+      }
+
+      toast({
+        title: "Success",
+        description: "Category updated successfully",
+      });
+
       setIsEditOpen(false);
       setSelectedCategory(null);
+      fetchCategories(); // Refresh the categories list
+    } catch (error: any) {
       toast({
-        title: 'Success',
-        description: 'Category updated successfully',
-      });
-    } catch (error) {
-      toast({
-        title: 'Error',
-        description: 'Failed to update category',
-        variant: 'destructive',
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
       });
     }
   };
@@ -182,57 +197,33 @@ export default function CategoriesPage() {
   const handleDeleteCategory = async () => {
     if (!selectedCategory) return;
 
+    const token = localStorage.getItem("token");
+
     try {
-      // In a real app, you would make an API call here
-      setCategories(categories.filter(cat => cat.id !== selectedCategory.id));
+      const response = await fetch(`${url.api}/api/categories/${selectedCategory.id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete category");
+      }
+
+      toast({
+        title: "Success",
+        description: "Category deleted successfully",
+      });
+
       setIsDeleteOpen(false);
       setSelectedCategory(null);
+      fetchCategories(); // Refresh the categories list
+    } catch (error: any) {
       toast({
-        title: 'Success',
-        description: 'Category deleted successfully',
-      });
-    } catch (error) {
-      toast({
-        title: 'Error',
-        description: 'Failed to delete category',
-        variant: 'destructive',
-      });
-    }
-  };
-
-  const handleAddSubcategory = async (formData: FormData) => {
-    if (!selectedCategory) return;
-
-    try {
-      // In a real app, you would make an API call here
-      const newSubcategory = {
-        id: Math.random().toString(),
-        name: formData.get('name') as string,
-        description: formData.get('description') as string,
-        imageUrl: URL.createObjectURL(formData.get('image') as File),
-        categoryId: selectedCategory.id,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-
-      const updatedCategory = {
-        ...selectedCategory,
-        subcategories: [...selectedCategory.subcategories, newSubcategory],
-      };
-
-      setCategories(categories.map(cat => 
-        cat.id === selectedCategory.id ? updatedCategory : cat
-      ));
-      setIsAddSubcategoryOpen(false);
-      toast({
-        title: 'Success',
-        description: 'Subcategory added successfully',
-      });
-    } catch (error) {
-      toast({
-        title: 'Error',
-        description: 'Failed to add subcategory',
-        variant: 'destructive',
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
       });
     }
   };
@@ -266,10 +257,6 @@ export default function CategoriesPage() {
           setSelectedCategory(category);
           setIsDeleteOpen(true);
         }}
-        onAddSubcategory={(category) => {
-          setSelectedCategory(category);
-          setIsAddSubcategoryOpen(true);
-        }}
       />
 
       <AddCategoryDialog
@@ -291,29 +278,9 @@ export default function CategoriesPage() {
         category={selectedCategory}
         onConfirm={handleDeleteCategory}
       />
-
-      <AddSubcategoryDialog
-        open={isAddSubcategoryOpen}
-        onOpenChange={setIsAddSubcategoryOpen}
-        category={selectedCategory}
-        onSubmit={handleAddSubcategory}
-      />
     </div>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

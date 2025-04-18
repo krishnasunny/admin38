@@ -25,11 +25,11 @@ export function Header() {
   return (
     <header className="h-14 border-b px-4 flex items-center justify-between">
       <div className="flex-1">
-        <input
+        {/* <input
           type="search"
           placeholder="Search..."
           className="w-[300px] px-3 py-1 text-sm border rounded-md"
-        />
+        /> */}
       </div>
       
       <div className="flex items-center space-x-2">
